@@ -2,8 +2,8 @@ package controller
 
 import (
 	"fmt"
-	"go_comic/model"
-	"go_comic/service"
+	"my_comic/model"
+	"my_comic/service"
 	"net/http"
 	"strconv"
 

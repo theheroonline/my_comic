@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go_comic/routers"
+	"my_comic/routers"
 	"net/http"
 	"time"
 )

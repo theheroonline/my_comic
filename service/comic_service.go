@@ -3,9 +3,9 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	db "go_comic/dao"
-	"go_comic/model"
 	"io/ioutil"
+	db "my_comic/dao"
+	"my_comic/model"
 	"sort"
 	"strings"
 )
@@ -62,7 +62,7 @@ func (s *comicService) Delete(id int) (nub int64) {
 
 func (s *comicService) Shuaxin() {
 	// path := "/usr/local/comic"
-	path := "D:/personal/go_comic"
+	path := "D:/personal/my_comic"
 	readFile(path)
 
 	var keys []string

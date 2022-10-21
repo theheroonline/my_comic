@@ -2,7 +2,7 @@ package routers
 
 import (
 	"fmt"
-	"go_comic/controller"
+	"my_comic/controller"
 	"net/http"
 	"text/template"
 	"time"
