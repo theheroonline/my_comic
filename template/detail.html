@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>详情</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="/static/plugins/elementui/index.css">
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- 引入组件库 -->
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/plugins/elementui/index.js"></script>
+    <script src="/static/js/axios-0.18.0.js"></script>
+</head>
+<style>
+    .content {
+        width: 1080px
+    }
+</style>
+
+<body>
+    <div class="block">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+            :current-page="pagination.currentPage" :page-sizes="[30, 50, 100, 200]" :page-size="pagination.pageSize"
+            layout="total, sizes, prev, pager, next, jumper" :total="pagination.total">
+        </el-pagination>
+    </div>
+
+
+    <div id="app" align="center">
+        <div id="pic" v-for="(comic) in dataList">
+            <img :src=ip+comic.url width="1080px">
+        </div>
+
+        <div class="block">
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                :current-page="pagination.currentPage" :page-sizes="[30, 50, 100, 200]" :page-size="pagination.pageSize"
+                layout="total, sizes, prev, pager, next, jumper" :total="pagination.total">
+            </el-pagination>
+        </div>
+    </div>
+    <div>
+        <img src="../static/img/dibu.jpg">
+    </div>
+    <script>
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                activeName: 'first',//添加/编辑窗口Tab标签名称
+                pagination: {//分页相关属性
+                    currentPage: 1,
+                    prev: 1,
+                    next: 2,
+                    pageSize: 50,
+                    total: 0,
+                    queryString: null,
+                    id: '',
+                },
+                ip: "http://198.211.5.186",
+                dataList: [],//列表数据
+                formData: {},//表单数据
+                tableData: [],//新增和编辑表单中对应的检查项列表数据
+                checkitemIds: [],//新增和编辑表单中检查项对应的复选框，基于双向绑定可以进行回显和数据提交
+                dialogFormVisible: false,//控制添加窗口显示/隐藏
+                dialogFormVisible4Edit: false,//控制编辑窗口显示/隐藏
+                rules: {//校验规则
+                    code: [{ required: true, message: '项目编码为必填项', trigger: 'blur' }],
+                    name: [{ required: true, message: '项目名称为必填项', trigger: 'blur' }]
+                }
+            },
+            created() {
+                this.findDetail();
+                // this.bindData();
+            },
+            methods: {
+                //分页查询
+                findDetail() {
+                    var id = location.search.slice(1).split('=')[1];
+                    this.dataList = []
+                    this.num = 0
+                    this.pagination.id = id;           
+                    axios.get("/comic/detail?currentPage=" + this.pagination.currentPage + "&pageSize=" + this.pagination.pageSize + "&id=" + this.pagination.id).then(res => {
+                        this.pagination.total = res.data.Data.total;
+                        this.dataList = res.data.Data.data;
+                    });
+                },
+                bindData() {
+                    this.pagination.total = res.data.Data.total;
+                    this.dataList = res.data.Data.data;
+                },
+                //切换页码
+                handleCurrentChange(currentPage) {
+                    this.dataList = [];
+                    this.pagination.currentPage = currentPage;
+                    this.findDetail();
+                },
+                handleSizeChange(pageSize) {
+                    this.pagination.pageSize = pageSize;
+                    this.findDetail();
+                },
+                // 删除
+                handleDelete(row) {
+                    this.$confirm('此操作将永久删除该检查组, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.get("/checkgroup/delete.do?id=" + row.id).then(res => {
+                            this.$message({
+                                message: res.data.message,
+                                type: res.data.flag ? 'success' : 'error'
+                            });
+                            this.findPage();
+                        })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
+                    });
+                }
+            }
+        }
+        )
+
+
+    </script>
+</body>
+
+</html>

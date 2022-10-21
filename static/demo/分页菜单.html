@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分页菜单</title>
+    <script src="js/vue.js"></script>
+    <script src="js/index.js"></script>
+    <link rel="stylesheet" href="js/index.css">
+</head>
+<body>
+<div id="app">
+    <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage4"
+            :page-sizes="[6, 12, 18, 24]"
+            :page-size="3"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="40">
+    </el-pagination>
+</div>
+</body>
+<script>
+    new Vue({
+        el:"#app",
+        methods: {
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+            }
+        },
+        data() {
+            return {
+                currentPage1: 5,
+                currentPage2: 5,
+                currentPage3: 5,
+                currentPage4: 2
+            };
+        }
+    })
+</script>
+</html>

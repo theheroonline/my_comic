@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="static\js\jquery.min.js"></script>
+
+<body>
+    <div id="list" align="center" margin="auto">
+        <div id="query">
+            <form name="input" action="queryList()" method="get">
+                <input type="text" name="search">
+                <input type="submit" value="搜索">
+            </form>
+        </div>
+        <div id="pic"></div>
+        <!-- <div><img src=""></div> -->
+    </div>
+    <div id="detail" align="center">
+        <div id="d_pic">看来说法萨芬</div>
+    </div>
+</body>
+
+<script>
+    var s = "";
+    var ip = "http://198.211.5.187";
+    var pic = $("#pic");
+    pageNo = 1;
+    pageSize = 50;
+    search = "认";
+    $.get('http://127.0.0.1:11036/comic/list', { pageno: pageNo, pagesize: pageSize, search: search }, function (res) {
+        $(res.Data).each(function (i, j) {
+            s += "<div><img src=";
+            s += ip;
+            s += j.icon;
+            s += "></div>";
+            s += "<div height = '50'> ";
+            s += j.nub;
+            s += "页 ";
+            s += j.name;
+            s += "</div>";
+        })
+        $("#detail").hide();
+        pic.html(s);
+        pic.show();
+    })
+
+    function queryList() {
+        $("#list").hide();
+        $.get('http://127.0.0.1:11036/comic/list', { pageno: 1, pagesize: 999 }, function (res) {
+            $(res.Data).each(function (i, j) {
+                s += "<div><img src=";
+                s += ip;
+                s += j.icon;
+                s += "></div>";
+                s += "<div height = '50'> ";
+                s += j.nub;
+                s += "页 ";
+                s += j.name;
+                s += "</div>";
+            })
+            $("#detail").hide();
+            pic.html(s);
+            pic.show();
+        })
+    }
+
+</script>
+
+</html>

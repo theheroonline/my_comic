@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes"/>
+    <title>列表</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="/static/plugins/elementui/index.css">
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen and (max-device-width: 600px)" href="style/css/css600.css"/>
+    <!-- 引入组件库 -->
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/plugins/elementui/index.js"></script>
+    <script src="/static/js/axios-0.18.0.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<style>
+.title{
+padding-top: 15px;
+font-size: 50px;
+color: #454545;
+}
+
+</style>
+
+<body>
+<div align="left" id="app">
+    <div class="filter-container">
+        <el-input placeholder="名称" v-model="pagination.queryString" style="width: 200px;" class="filter-item"
+                  @keyup.enter.native="handleFilter"></el-input>
+        <el-button @click="findPage2()" class="dalfBut">查询</el-button>
+    </div>
+    <div class="block">
+        <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="pagination.currentPage"
+                :page-sizes="[20, 30, 50]"
+                :page-size="pagination.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pagination.total">
+        </el-pagination>
+    </div>
+<!--    <div>-->
+<!--        <img class="img-responsive"  src="../static/img/photo1.png">-->
+<!--    </div>-->
+<!--    <div margin="auto">-->
+<!--        <img class="cod" src="../static/img/paypal2.png" height = "50">-->
+<!--    </div>-->
+    <div id="pic" v-for="(comic) in dataList">
+        <div @click="detail(comic.id)">
+            <img :src=ip+comic.icon class="img-responsive" >
+        </div>
+        <div height = "50">{{comic.name}}</div>
+    </div>
+    <el-row>
+        <el-col :span="24">
+            <div class="grid-content bg-purple-dark"></div>
+        </el-col>
+    </el-row>
+
+    <div class="block">
+        <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="pagination.currentPage"
+                :page-sizes="[20, 30, 50]"
+                :page-size="pagination.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pagination.total">
+        </el-pagination>
+    </div>
+    <div>
+        <img src="../static/img/dibu.jpg">
+    </div>
+    <el-row>
+        <el-col :span="24">
+            <div class="grid-content bg-purple-dark"></div>
+        </el-col>
+    </el-row>
+</div>
+</div>
+<script>
+var vue=new Vue({
+    el:"#app",
+     data:{
+                activeName:'first',//添加/编辑窗口Tab标签名称
+                pagination: {//分页相关属性
+                    currentPage: 1,
+                    prev: 1,
+                    next: 2,
+                    pageSize:30,
+                    total:0,
+                    queryString:null,
+                },
+                ip:"http://1.117.171.160",
+                dataList: [],//列表数据
+                formData: {},//表单数据
+                tableData:[],//新增和编辑表单中对应的检查项列表数据
+                checkitemIds:[],//新增和编辑表单中检查项对应的复选框，基于双向绑定可以进行回显和数据提交
+                dialogFormVisible: false,//控制添加窗口显示/隐藏
+                dialogFormVisible4Edit:false,//控制编辑窗口显示/隐藏
+                rules: {//校验规则
+                    code: [{required: true, message: '项目编码为必填项', trigger: 'blur'}],
+                    name: [{required: true, message: '项目名称为必填项', trigger: 'blur'}]
+                }
+            },
+    created() {
+                this.findPage();
+            },
+    methods:{
+     //分页查询
+                findPage() {
+                    axios.post("/read/list",this.pagination).then(res=>{
+                        this.pagination.total=res.data.total;
+                        this.dataList=res.data.rows;
+                        });
+                },
+    findPage2() {
+                this.pagination.currentPage = 1;
+                this.findPage();
+            },
+             detail(id) {
+                location.href = '/templates/detail.html?id='+id
+            },
+    //切换页码
+                handleCurrentChange(currentPage) {
+                    this.dataList=[];
+                    this.pagination.currentPage=currentPage;
+                    this.findPage();
+                },
+                handleSizeChange(pageSize) {
+                    this.pagination.pageSize=pageSize;
+                    this.findPage();
+                },
+                 // 删除
+                handleDelete(row) {
+                    this.$confirm('此操作将永久删除该检查组, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.get("/checkgroup/delete.do?id=" + row.id).then(res=>{
+                            this.$message({
+                                message: res.data.message,
+                                type: res.data.flag ? 'success' : 'error'
+                            });
+                            this.findPage();
+                        })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
+                    });
+                }
+         }
+   }
+)
+
+
+
+
+
+
+</script>
+</body>
+</html>
